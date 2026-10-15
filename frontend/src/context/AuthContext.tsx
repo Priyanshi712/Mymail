@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (payload: LoginPayload) => Promise<AuthResponse>;
   signup: (payload: SignupPayload) => Promise<AuthResponse>;
+  handleOAuthSuccess: (res: AuthResponse) => void;
   logout: () => Promise<void>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
@@ -57,6 +58,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return res;
   };
 
+  const handleOAuthSuccess = (res: AuthResponse) => {
+    localStorage.setItem("mymail_token", res.access_token);
+    setToken(res.access_token);
+    setUser(res.user);
+  };
+
   const logout = async () => {
     try {
       if (token) {
@@ -80,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         login,
         signup,
+        handleOAuthSuccess,
         logout,
         setUser,
       }}

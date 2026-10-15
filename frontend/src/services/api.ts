@@ -2,6 +2,8 @@ import type {
   AuthResponse,
   LoginPayload,
   MessageResponse,
+  OAuthCallbackPayload,
+  OAuthUrlResponse,
   PasswordResetConfirmPayload,
   PasswordResetRequestPayload,
   SignupPayload,
@@ -91,6 +93,19 @@ class ApiService {
   async logout(): Promise<MessageResponse> {
     return this.request<MessageResponse>("/auth/logout", {
       method: "POST",
+    });
+  }
+
+  async getGitHubAuthUrl(): Promise<OAuthUrlResponse> {
+    return this.request<OAuthUrlResponse>("/auth/oauth/github/url", {
+      method: "GET",
+    });
+  }
+
+  async githubCallback(payload: OAuthCallbackPayload): Promise<AuthResponse> {
+    return this.request<AuthResponse>("/auth/oauth/github/callback", {
+      method: "POST",
+      body: JSON.stringify(payload),
     });
   }
 }

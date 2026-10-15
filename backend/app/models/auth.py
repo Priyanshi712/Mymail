@@ -64,3 +64,15 @@ class PasswordResetConfirm(BaseModel):
 class MessageResponse(BaseModel):
     message: str
     success: bool = True
+
+
+class OAuthUrlResponse(BaseModel):
+    url: str
+    state: str
+    provider: str = "github"
+
+
+class OAuthCallbackPayload(BaseModel):
+    code: str
+    state: str
+

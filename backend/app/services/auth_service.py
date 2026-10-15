@@ -11,9 +11,42 @@ class InMemoryUserStore:
         self._users: Dict[str, dict] = {}
         # token -> email
         self._reset_tokens: Dict[str, str] = {}
+        # oauth states (state -> timestamp)
+        self._oauth_states: Dict[str, datetime] = {}
         
         # Seed a default demo account for immediate testing
         self.seed_demo_user()
+
+    def store_oauth_state(self, state: str):
+        self._oauth_states[state] = datetime.now(timezone.utc)
+
+    def verify_and_consume_oauth_state(self, state: str) -> bool:
+        if state in self._oauth_states:
+            del self._oauth_states[state]
+            return True
+        return False
+
+    def find_or_create_oauth_user(self, email: str, full_name: str, provider: str = "github", provider_id: Optional[str] = None) -> dict:
+        email = email.lower()
+        user = self.get_by_email(email)
+        if user:
+            # Update provider info if needed
+            user["provider"] = provider
+            if provider_id:
+                user["provider_id"] = provider_id
+            return user
+
+        user_data = {
+            "id": str(uuid.uuid4()),
+            "email": email,
+            "full_name": full_name,
+            "hashed_password": get_password_hash(str(uuid.uuid4())),  # Random secure unguessable password
+            "provider": provider,
+            "provider_id": provider_id,
+            "created_at": datetime.now(timezone.utc),
+        }
+        self._users[email] = user_data
+        return user_data
 
     def seed_demo_user(self):
         demo_email = "demo@mymail.ai"

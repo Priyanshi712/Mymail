@@ -143,3 +143,40 @@ def test_forgot_and_reset_password_flow():
         json={"email": "demo@mymail.ai", "password": "NewSecretPassword999"}
     )
     assert new_login.status_code == 200
+
+
+def test_github_oauth_url_generation():
+    response = client.get("/api/auth/oauth/github/url")
+    assert response.status_code == 200
+    data = response.json()
+    assert "url" in data
+    assert "state" in data
+    assert data["provider"] == "github"
+    assert len(data["state"]) > 10
+
+
+def test_github_oauth_callback_invalid_state():
+    response = client.post(
+        "/api/auth/oauth/github/callback",
+        json={"code": "sample_code", "state": "forged_state_token"}
+    )
+    assert response.status_code == 400
+    assert "anti-CSRF" in response.json()["detail"]
+
+
+def test_github_oauth_callback_success():
+    # 1. Fetch valid state
+    url_resp = client.get("/api/auth/oauth/github/url")
+    state = url_resp.json()["state"]
+
+    # 2. Callback with valid state
+    cb_resp = client.post(
+        "/api/auth/oauth/github/callback",
+        json={"code": "valid_github_code", "state": state}
+    )
+    assert cb_resp.status_code == 200
+    data = cb_resp.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+    assert "priyanshi" in data["user"]["email"]
+

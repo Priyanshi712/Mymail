@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     SUPABASE_URL: Optional[str] = None
     SUPABASE_KEY: Optional[str] = None
     DATABASE_URL: Optional[str] = None
+
+    # GitHub OAuth configuration
+    GITHUB_CLIENT_ID: Optional[str] = None
+    GITHUB_CLIENT_SECRET: Optional[str] = None
+    GITHUB_REDIRECT_URI: str = "http://localhost:5173/auth/callback/github"
     
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = [

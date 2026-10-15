@@ -5,6 +5,7 @@ import { SignupPage } from "./pages/SignupPage";
 import { LoginPage } from "./pages/LoginPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
+import { GitHubCallbackPage } from "./pages/GitHubCallbackPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { BrandLogo } from "./components/ui/BrandLogo";
 
@@ -53,6 +54,7 @@ export const App: React.FC = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/auth/callback/github" element={<GitHubCallbackPage />} />
           <Route
             path="/dashboard"
             element={

@@ -38,3 +38,15 @@ export interface PasswordResetConfirmPayload {
   new_password: string;
   confirm_new_password: string;
 }
+
+export interface OAuthUrlResponse {
+  url: string;
+  state: string;
+  provider: string;
+}
+
+export interface OAuthCallbackPayload {
+  code: string;
+  state: string;
+}
+
