@@ -6,8 +6,8 @@ An intelligent, portfolio-grade AI email agent that organizes inbox messages, ge
 **Human-in-the-Loop by Default**: The AI copilot never dispatches an email, deletes a thread, or executes consequential actions without explicit user review and approval of the recipient, subject, and full message body.
 
 ## 🚀 Capabilities Roadmap
-- [ ] **A. Authentication**: Full signup, login, password visibility, reset flow with Supabase Auth & JWT.
-- [ ] **B. Application Shell & Navigation**: Messimo-inspired aesthetic (soft lime `#D3F49A`, forest green `#173D2B`, rounded cards, pill buttons).
+- [x] **A. Authentication**: Full signup, login, password visibility, reset flow with Supabase Auth & JWT.
+- [x] **B. Application Shell & Navigation**: Messimo-inspired aesthetic (soft lime `#D3F49A`, forest green `#173D2B`, rounded cards, pill buttons, collapsible sidebar, global command palette, compose modal).
 - [ ] **C. Dashboard Overview**: High-density inbox health, unread counts, pending replies, follow-ups due today.
 - [ ] **D. Email Provider Connection**: Secure OAuth 2.0 with Gmail API (modular architecture for Outlook).
 - [ ] **E. Inbox & Thread Viewer**: Thread inspection, message metadata, read/unread states, and pagination.

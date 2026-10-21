@@ -6,7 +6,14 @@ import { LoginPage } from "./pages/LoginPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { GitHubCallbackPage } from "./pages/GitHubCallbackPage";
+import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./pages/DashboardPage";
+import { InboxPage } from "./pages/InboxPage";
+import { NeedsReplyPage } from "./pages/NeedsReplyPage";
+import { AISummariesPage } from "./pages/AISummariesPage";
+import { DraftsPage } from "./pages/DraftsPage";
+import { RemindersPage } from "./pages/RemindersPage";
+import { SettingsPage } from "./pages/SettingsPage";
 import { BrandLogo } from "./components/ui/BrandLogo";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -55,14 +62,24 @@ export const App: React.FC = () => {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/auth/callback/github" element={<GitHubCallbackPage />} />
+
+          {/* Authenticated Application Shell & Milestone B Navigation */}
           <Route
-            path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <AppShell />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/inbox" element={<InboxPage />} />
+            <Route path="/needs-reply" element={<NeedsReplyPage />} />
+            <Route path="/summaries" element={<AISummariesPage />} />
+            <Route path="/drafts" element={<DraftsPage />} />
+            <Route path="/reminders" element={<RemindersPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Route>
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
