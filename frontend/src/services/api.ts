@@ -9,6 +9,7 @@ import type {
   SignupPayload,
   User,
 } from "../types/auth";
+import type { DashboardOverviewResponse, TriageActionResponse } from "../types/dashboard";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
@@ -106,6 +107,19 @@ class ApiService {
     return this.request<AuthResponse>("/auth/oauth/github/callback", {
       method: "POST",
       body: JSON.stringify(payload),
+    });
+  }
+
+  async getDashboardOverview(): Promise<DashboardOverviewResponse> {
+    return this.request<DashboardOverviewResponse>("/dashboard/overview", {
+      method: "GET",
+    });
+  }
+
+  async triageThread(threadId: string, action: "resolve" | "snooze" | "drafted"): Promise<TriageActionResponse> {
+    return this.request<TriageActionResponse>(`/dashboard/triage/${threadId}`, {
+      method: "POST",
+      body: JSON.stringify({ action }),
     });
   }
 }

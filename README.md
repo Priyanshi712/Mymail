@@ -8,7 +8,7 @@ An intelligent, portfolio-grade AI email agent that organizes inbox messages, ge
 ## 🚀 Capabilities Roadmap
 - [x] **A. Authentication**: Full signup, login, password visibility, reset flow with Supabase Auth & JWT.
 - [x] **B. Application Shell & Navigation**: Messimo-inspired aesthetic (soft lime `#D3F49A`, forest green `#173D2B`, rounded cards, pill buttons, collapsible sidebar, global command palette, compose modal).
-- [ ] **C. Dashboard Overview**: High-density inbox health, unread counts, pending replies, follow-ups due today.
+- [x] **C. Dashboard Overview**: High-density inbox health, unread counts, pending replies, follow-ups due today, real-time triage scoring.
 - [ ] **D. Email Provider Connection**: Secure OAuth 2.0 with Gmail API (modular architecture for Outlook).
 - [ ] **E. Inbox & Thread Viewer**: Thread inspection, message metadata, read/unread states, and pagination.
 - [ ] **F. Search & Filtering**: Client & server filtering by sender, date range, read status, and labels.

@@ -7,6 +7,7 @@ import {
   RotateCcw,
   Sparkles,
   Plus,
+  X,
 } from "lucide-react";
 import { useAppShell } from "../context/AppShellContext";
 import { PillButton } from "../components/ui/PillButton";
@@ -54,6 +55,13 @@ export const RemindersPage: React.FC = () => {
     },
   ]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newRecipient, setNewRecipient] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newSubject, setNewSubject] = useState("");
+  const [newCondition, setNewCondition] = useState("Remind if no reply within 3 days");
+  const [newDueTime, setNewDueTime] = useState("In 3 days (10:00 AM)");
+
   const handleSnooze = (id: string) => {
     setReminders((prev) =>
       prev.map((r) =>
@@ -64,6 +72,27 @@ export const RemindersPage: React.FC = () => {
 
   const handleDismiss = (id: string) => {
     setReminders((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const handleCreateReminder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEmail || !newSubject) return;
+
+    const created: ReminderItem = {
+      id: `r-${Date.now()}`,
+      recipient: newRecipient || newEmail.split("@")[0],
+      recipientEmail: newEmail,
+      subject: newSubject,
+      condition: newCondition,
+      dueTime: newDueTime,
+      status: "Upcoming",
+    };
+
+    setReminders((prev) => [created, ...prev]);
+    setIsModalOpen(false);
+    setNewRecipient("");
+    setNewEmail("");
+    setNewSubject("");
   };
 
   const getStatusBadge = (status: string) => {
@@ -101,12 +130,7 @@ export const RemindersPage: React.FC = () => {
             variant="primary"
             size="md"
             icon={<Plus className="w-4 h-4" />}
-            onClick={() =>
-              openCompose({
-                subject: "Follow-up: Checking in",
-                body: "Hi there,\n\nFollowing up on my previous note. Wanted to see if you had a chance to review the details.\n\nBest,\nPriyanshi",
-              })
-            }
+            onClick={() => setIsModalOpen(true)}
           >
             Schedule New Follow-up
           </PillButton>
@@ -203,6 +227,109 @@ export const RemindersPage: React.FC = () => {
           ))
         )}
       </div>
+
+      {/* Schedule Reminder Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-forest-dark/40 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsModalOpen(false)}
+          />
+
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-surface-border p-6 z-10 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+              <div className="flex items-center gap-2 text-forest">
+                <div className="w-8 h-8 rounded-xl bg-lime-soft flex items-center justify-center text-forest">
+                  <Clock className="w-4 h-4" />
+                </div>
+                <h3 className="text-sm font-bold text-ink-primary">Schedule Follow-up Reminder</h3>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="w-8 h-8 rounded-xl bg-surface-offwhite hover:bg-surface-hover flex items-center justify-center text-ink-muted hover:text-ink-primary transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateReminder} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-ink-secondary mb-1">Recipient Name</label>
+                <input
+                  type="text"
+                  value={newRecipient}
+                  onChange={(e) => setNewRecipient(e.target.value)}
+                  placeholder="e.g. Alex Rivera"
+                  className="w-full bg-surface-offwhite border border-surface-border rounded-xl px-3.5 py-2.5 text-ink-primary focus:outline-none focus:border-forest"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-ink-secondary mb-1">Recipient Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="alex@designsystems.co"
+                  className="w-full bg-surface-offwhite border border-surface-border rounded-xl px-3.5 py-2.5 text-ink-primary focus:outline-none focus:border-forest"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-ink-secondary mb-1">Subject / Thread *</label>
+                <input
+                  type="text"
+                  required
+                  value={newSubject}
+                  onChange={(e) => setNewSubject(e.target.value)}
+                  placeholder="e.g. Contract Signatures & Invoice"
+                  className="w-full bg-surface-offwhite border border-surface-border rounded-xl px-3.5 py-2.5 text-ink-primary focus:outline-none focus:border-forest"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-ink-secondary mb-1">Reminder Condition</label>
+                <select
+                  value={newCondition}
+                  onChange={(e) => setNewCondition(e.target.value)}
+                  className="w-full bg-surface-offwhite border border-surface-border rounded-xl px-3.5 py-2.5 text-ink-primary focus:outline-none focus:border-forest"
+                >
+                  <option value="Remind if no reply within 24 hours">Remind if no reply within 24 hours</option>
+                  <option value="Remind if no reply within 3 days">Remind if no reply within 3 days</option>
+                  <option value="Remind if no reply within 1 week">Remind if no reply within 1 week</option>
+                  <option value="Remind regardless of response on due date">Remind regardless of response on due date</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-ink-secondary mb-1">Due Timing</label>
+                <input
+                  type="text"
+                  value={newDueTime}
+                  onChange={(e) => setNewDueTime(e.target.value)}
+                  placeholder="e.g. In 3 days (10:00 AM)"
+                  className="w-full bg-surface-offwhite border border-surface-border rounded-xl px-3.5 py-2.5 text-ink-primary focus:outline-none focus:border-forest"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-surface-border">
+                <PillButton
+                  variant="secondary"
+                  size="sm"
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </PillButton>
+                <PillButton variant="primary" size="sm" type="submit">
+                  Save Reminder
+                </PillButton>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
