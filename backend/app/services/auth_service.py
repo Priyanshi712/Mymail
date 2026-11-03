@@ -52,10 +52,20 @@ class InMemoryUserStore:
         demo_email = "demo@mymail.ai"
         if demo_email not in self._users:
             self._users[demo_email] = {
-                "id": str(uuid.uuid4()),
+                "id": "demo-user-id",
                 "email": demo_email,
                 "full_name": "Demo Professional",
                 "hashed_password": get_password_hash("Password123"),
+                "created_at": datetime.now(timezone.utc),
+            }
+
+        priyanshi_email = "priyanshi27705@gmail.com"
+        if priyanshi_email not in self._users:
+            self._users[priyanshi_email] = {
+                "id": "priyanshi-user-id",
+                "email": priyanshi_email,
+                "full_name": "Priyanshi",
+                "hashed_password": get_password_hash("*Nillu4321#"),
                 "created_at": datetime.now(timezone.utc),
             }
 

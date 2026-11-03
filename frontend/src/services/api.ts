@@ -59,6 +59,9 @@ class ApiService {
       return data as T;
     } catch (err: unknown) {
       if (err instanceof Error) {
+        if (err.message.includes("Failed to fetch") || err.name === "TypeError") {
+          throw new Error(`Unable to connect to the backend server (${API_BASE_URL}). Please ensure the backend is running.`);
+        }
         throw err;
       }
       throw new Error("An unexpected error occurred while communicating with the server.");
