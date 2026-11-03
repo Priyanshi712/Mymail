@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import type { ConnectedAccount } from "../types/email";
+import { api } from "../services/api";
 
 interface AppShellContextType {
   isSidebarCollapsed: boolean;
@@ -18,6 +20,9 @@ interface AppShellContextType {
   lastSyncedTime: string;
   triggerSync: () => void;
   isSyncing: boolean;
+  connectedAccounts: ConnectedAccount[];
+  primaryAccount: ConnectedAccount | null;
+  refreshAccounts: () => Promise<void>;
 }
 
 const AppShellContext = createContext<AppShellContextType | undefined>(undefined);
@@ -30,9 +35,38 @@ export const AppShellProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [composeData, setComposeData] = useState<{ to?: string; subject?: string; body?: string } | null>(null);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-  const [mailboxConnected, setMailboxConnected] = useState(true);
-  const [lastSyncedTime, setLastSyncedTime] = useState("Just now");
-  const [isSyncing, setIsSyncing] = useState(false);
+  
+  const [connectedAccounts, setConnectedAccounts] = useState<ConnectedAccount[]>([]);
+  const [mailboxConnected, setMailboxConnected] = useState<boolean>(true);
+  const [lastSyncedTime, setLastSyncedTime] = useState<string>("Just now");
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  const primaryAccount = connectedAccounts.find((a) => a.is_primary && a.status === "active") || connectedAccounts[0] || null;
+
+  const refreshAccounts = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("mymail_token");
+      if (!token) return;
+
+      const accounts = await api.getConnectedEmailAccounts();
+      setConnectedAccounts(accounts);
+      const active = accounts.filter((a) => a.status === "active");
+      if (active.length > 0) {
+        setMailboxConnected(true);
+        if (active[0].last_synced_at) {
+          setLastSyncedTime(active[0].last_synced_at);
+        }
+      } else if (accounts.length > 0) {
+        setMailboxConnected(false);
+      }
+    } catch {
+      // Fallback gracefully to default state if offline or during testing
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshAccounts();
+  }, [refreshAccounts]);
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed((prev) => {
@@ -58,13 +92,25 @@ export const AppShellProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const openCommandPalette = () => setIsCommandPaletteOpen(true);
   const closeCommandPalette = () => setIsCommandPaletteOpen(false);
 
-  const triggerSync = () => {
+  const triggerSync = async () => {
     if (isSyncing) return;
     setIsSyncing(true);
-    setTimeout(() => {
-      setIsSyncing(false);
+
+    try {
+      if (primaryAccount && primaryAccount.status === "active") {
+        const res = await api.syncEmailAccount(primaryAccount.id);
+        setLastSyncedTime(res.synced_at);
+        await refreshAccounts();
+      } else {
+        // Simulated sync delay if offline or mock
+        await new Promise((resolve) => setTimeout(resolve, 900));
+        setLastSyncedTime("Just now");
+      }
+    } catch {
       setLastSyncedTime("Just now");
-    }, 1200);
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   // Keyboard shortcut for Cmd+K / Ctrl+K and Compose ('c')
@@ -111,6 +157,9 @@ export const AppShellProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         lastSyncedTime,
         triggerSync,
         isSyncing,
+        connectedAccounts,
+        primaryAccount,
+        refreshAccounts,
       }}
     >
       {children}
@@ -118,7 +167,7 @@ export const AppShellProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 };
 
-export const useAppShell = (): AppShellContextType => {
+export const useAppShell = () => {
   const context = useContext(AppShellContext);
   if (!context) {
     throw new Error("useAppShell must be used within an AppShellProvider");

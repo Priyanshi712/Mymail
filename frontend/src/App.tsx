@@ -6,6 +6,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { GitHubCallbackPage } from "./pages/GitHubCallbackPage";
+import { GoogleCallbackPage } from "./pages/GoogleCallbackPage";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./pages/DashboardPage";
 import { InboxPage } from "./pages/InboxPage";
@@ -62,6 +63,8 @@ export const App: React.FC = () => {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/auth/callback/github" element={<GitHubCallbackPage />} />
+          <Route path="/auth/callback/google" element={<GoogleCallbackPage />} />
+          <Route path="/auth/callback/outlook" element={<GoogleCallbackPage />} />
 
           {/* Authenticated Application Shell & Milestone B Navigation */}
           <Route

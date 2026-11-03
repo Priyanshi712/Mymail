@@ -10,6 +10,15 @@ import type {
   User,
 } from "../types/auth";
 import type { DashboardOverviewResponse, TriageActionResponse } from "../types/dashboard";
+import type {
+  ConnectedAccount,
+  ProviderListResponse,
+  EmailOAuthUrlResponse,
+  EmailOAuthCallbackPayload,
+  SyncMailboxResponse,
+  DisconnectAccountResponse,
+  AccountThreadsResponse,
+} from "../types/email";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
@@ -120,6 +129,65 @@ class ApiService {
     return this.request<TriageActionResponse>(`/dashboard/triage/${threadId}`, {
       method: "POST",
       body: JSON.stringify({ action }),
+    });
+  }
+
+  // Email Provider Connection & Mailbox Sync (Milestone D)
+  async getEmailProviders(): Promise<ProviderListResponse> {
+    return this.request<ProviderListResponse>("/email/providers", {
+      method: "GET",
+    });
+  }
+
+  async getEmailOAuthUrl(provider: string): Promise<EmailOAuthUrlResponse> {
+    return this.request<EmailOAuthUrlResponse>(`/email/oauth/${provider}/url`, {
+      method: "GET",
+    });
+  }
+
+  async emailOAuthCallback(
+    provider: string,
+    payload: EmailOAuthCallbackPayload
+  ): Promise<ConnectedAccount> {
+    return this.request<ConnectedAccount>(`/email/oauth/${provider}/callback`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async getConnectedEmailAccounts(): Promise<ConnectedAccount[]> {
+    return this.request<ConnectedAccount[]>("/email/accounts", {
+      method: "GET",
+    });
+  }
+
+  async getEmailAccountStatus(accountId: string): Promise<ConnectedAccount> {
+    return this.request<ConnectedAccount>(`/email/accounts/${accountId}/status`, {
+      method: "GET",
+    });
+  }
+
+  async syncEmailAccount(accountId: string): Promise<SyncMailboxResponse> {
+    return this.request<SyncMailboxResponse>(`/email/accounts/${accountId}/sync`, {
+      method: "POST",
+    });
+  }
+
+  async disconnectEmailAccount(accountId: string): Promise<DisconnectAccountResponse> {
+    return this.request<DisconnectAccountResponse>(`/email/accounts/${accountId}/disconnect`, {
+      method: "POST",
+    });
+  }
+
+  async reconnectEmailAccount(accountId: string): Promise<ConnectedAccount> {
+    return this.request<ConnectedAccount>(`/email/accounts/${accountId}/reconnect`, {
+      method: "POST",
+    });
+  }
+
+  async getEmailAccountThreads(accountId: string): Promise<AccountThreadsResponse> {
+    return this.request<AccountThreadsResponse>(`/email/accounts/${accountId}/threads`, {
+      method: "GET",
     });
   }
 }

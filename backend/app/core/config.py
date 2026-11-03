@@ -19,6 +19,16 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_ID: Optional[str] = None
     GITHUB_CLIENT_SECRET: Optional[str] = None
     GITHUB_REDIRECT_URI: str = "http://localhost:5173/auth/callback/github"
+
+    # Google OAuth 2.0 (Gmail API)
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+    GOOGLE_REDIRECT_URI: str = "http://localhost:5173/auth/callback/google"
+
+    # Microsoft OAuth 2.0 (Outlook / Graph API)
+    MICROSOFT_CLIENT_ID: Optional[str] = None
+    MICROSOFT_CLIENT_SECRET: Optional[str] = None
+    MICROSOFT_REDIRECT_URI: str = "http://localhost:5173/auth/callback/outlook"
     
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = [
